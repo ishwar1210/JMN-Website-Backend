@@ -7,12 +7,14 @@
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 /**
@@ -28,6 +30,28 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+/**
+ * Create optional HTTPS server if SSL keys exist
+ */
+try {
+  var sslKeyPath = process.env.SSL_KEY_PATH || './certs/private.key';
+  var sslCertPath = process.env.SSL_CERT_PATH || './certs/certificate.crt';
+  
+  if (fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
+    var options = {
+      key: fs.readFileSync(sslKeyPath),
+      cert: fs.readFileSync(sslCertPath)
+    };
+    var httpsPort = normalizePort(process.env.HTTPS_PORT || '5001');
+    var httpsServer = https.createServer(options, app);
+    httpsServer.listen(httpsPort, () => {
+      console.log('HTTPS Server is listening on port ' + httpsPort);
+    });
+  }
+} catch (err) {
+  console.log('HTTPS Server not started:', err.message);
+}
 
 /**
  * Normalize a port into a number, string, or false.

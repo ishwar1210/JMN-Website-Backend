@@ -16,6 +16,7 @@ var clientRouter = require('./routes/client');
 var achievementsRouter = require('./routes/achievements');
 var authRouter = require('./routes/auth');
 var technologiesdetailRouter = require('./routes/technologiesdetail');
+var socialLinksRouter = require('./routes/social_links');
 
 var app = express();
 
@@ -58,6 +59,7 @@ app.use('/api/home', homeRouter);
 app.use('/api/client', clientRouter);
 app.use('/api/achievements', achievementsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/social_links', socialLinksRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
